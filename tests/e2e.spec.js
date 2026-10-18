@@ -17,7 +17,7 @@ test("primary paths, validation, success, failure and anchors", async ({ page })
   const form = page.locator("#form-popup");
   await expect(page.locator("#enquiry-dialog")).toHaveJSProperty("open", true);
   await expect(form.locator("input[name=enquiry_type]")).toHaveValue("brochure");
-  await expect(form.getByRole("button", { name: "Enquire Now" })).toBeVisible();
+  await expect(form.getByRole("button", { name: "Get in Touch" })).toBeVisible();
 
   await page.getByRole("button", { name: "Get 3 BHK Floor Plan" }).first().evaluate((node) => node.click());
   await expect(form.locator("input[name=enquiry_type]")).toHaveValue("floor_plan");

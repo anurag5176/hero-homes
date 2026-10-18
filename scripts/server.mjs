@@ -2,8 +2,8 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { validateLead } from "./leads.mjs";
-import { sendLeadMail, smtpSettings } from "./smtp.mjs";
+import { processEnquiry } from "./enquiry.mjs";
+import { smtpSettings } from "./smtp.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
@@ -73,40 +73,6 @@ async function readBody(req) {
   return JSON.parse(raw);
 }
 
-async function deliver(lead, env) {
-  if (smtpSettings(env)) {
-    await sendLeadMail(lead, env);
-    return "smtp";
-  }
-
-  if (env.LEAD_WEBHOOK_URL) {
-    const headers = { "Content-Type": "application/json" };
-    if (env.LEAD_WEBHOOK_TOKEN) headers.Authorization = `Bearer ${env.LEAD_WEBHOOK_TOKEN}`;
-    const response = await fetch(env.LEAD_WEBHOOK_URL, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(lead)
-    });
-    if (!response.ok) {
-      const error = new Error("webhook_failed");
-      error.code = "webhook_failed";
-      throw error;
-    }
-    return "webhook";
-  }
-
-  if (env.LEAD_LOCAL_STORE === "true") {
-    const file = path.resolve(root, env.LEAD_STORE_PATH || "data/leads/enquiries.jsonl");
-    await fs.promises.mkdir(path.dirname(file), { recursive: true, mode: 0o700 });
-    await fs.promises.appendFile(file, `${JSON.stringify(lead)}\n`, { mode: 0o600 });
-    return "local";
-  }
-
-  const error = new Error("not_configured");
-  error.code = "not_configured";
-  throw error;
-}
-
 export function createApp(options = {}) {
   const env = options.env || process.env;
   const hits = options.hits || new Map();
@@ -146,26 +112,8 @@ export function createApp(options = {}) {
         return;
       }
 
-      const result = validateLead(body);
-      if (!result.ok) {
-        console.info(`enquiry_rejected ${result.code || "validation"}`);
-        send(res, 400, { ok: false, code: result.code || "validation", errors: result.errors });
-        return;
-      }
-
-      try {
-        const sink = await deliver(result.lead, env);
-        console.info(`enquiry_accepted sink=${sink} type=${result.lead.enquiry_type}`);
-        send(res, 200, { ok: true, sink });
-      } catch (error) {
-        if (error.code === "not_configured") {
-          console.info("enquiry_unconfigured");
-          send(res, 503, { ok: false, code: "not_configured" });
-          return;
-        }
-        console.info(`enquiry_failed code=${error.code || "delivery"}`);
-        send(res, 502, { ok: false, code: "delivery_failed" });
-      }
+      const outcome = await processEnquiry(body, env);
+      send(res, outcome.status, outcome.body);
       return;
     }
 

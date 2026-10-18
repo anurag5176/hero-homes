@@ -119,7 +119,7 @@ function enquireDialog() {
   return `<dialog id="enquiry-dialog" aria-labelledby="enquiry-dialog-title">
     <form class="enquiry enquiry-popup" id="form-popup" data-enquiry="project_details" data-section="popup" novalidate>
       <div class="dialog-head">
-        <p id="enquiry-dialog-title">Enquire Now</p>
+        <p id="enquiry-dialog-title">Get in Touch</p>
         <button class="icon-btn" type="button" data-close-dialog aria-label="Close">×</button>
       </div>
       <div class="dialog-body">
@@ -155,7 +155,7 @@ function enquireDialog() {
         </div>
         <input type="hidden" name="enquiry_type" value="project_details">
         <input type="hidden" name="section" value="popup">
-        <button class="btn btn-accent btn-block" type="submit">Enquire Now</button>
+        <button class="btn btn-accent btn-block" type="submit">Get in Touch</button>
         <p class="form-status" role="status" aria-live="polite"></p>
       </div>
     </form>
@@ -209,8 +209,8 @@ function header(active) {
     : "";
   const mobileEnquire =
     active === "home"
-      ? `<button class="btn header-cta header-enquire" type="button" data-enquiry="project_details" data-section="header">Enquire Now</button>`
-      : `<a class="btn header-cta header-enquire" href="/#enquire">Enquire Now</a>`;
+      ? `<button class="btn header-cta header-enquire" type="button" data-enquiry="project_details" data-section="header">Get in Touch</button>`
+      : `<a class="btn header-cta header-enquire" href="/#enquire">Get in Touch</a>`;
   return `<a class="skip" href="#content">Skip to content</a>
   <header class="site-header">
     <div class="wrap header-inner">
@@ -220,7 +220,7 @@ function header(active) {
         <span class="brand-place">Greater Noida</span>
       </a>
       <nav class="nav" aria-label="Page">
-        <a href="/#overview">About</a>
+        <a href="/#overview">Overview</a>
         <a href="/#homes">Floor Plans</a>
         <a href="/#amenities">Amenities</a>
         <a href="/#location">Location</a>

@@ -7,6 +7,8 @@ import http from "node:http";
 import net from "node:net";
 import { validateLead } from "../scripts/leads.mjs";
 import { createApp } from "../scripts/server.mjs";
+import { processEnquiry } from "../scripts/enquiry.mjs";
+import handler from "../api/enquiry.js";
 import { leadMessage, smtpSettings } from "../scripts/smtp.mjs";
 
 function validBody(overrides = {}) {
@@ -228,4 +230,24 @@ test("rate limits repeated posts", async () => {
   } finally {
     server.close();
   }
+});
+
+test("Vercel enquiry handler refuses mail when SMTP is not configured", async () => {
+  const missing = await processEnquiry(validBody(), {});
+  assert.equal(missing.status, 503);
+  assert.equal(missing.body.code, "not_configured");
+
+  const sent = [];
+  const res = {
+    setHeader() {},
+    status(code) {
+      sent.push(code);
+      return this;
+    },
+    json(body) {
+      sent.push(body);
+    }
+  };
+  await handler({ method: "GET", headers: {}, body: validBody() }, res);
+  assert.deepEqual(sent, [405, { ok: false, code: "method" }]);
 });
