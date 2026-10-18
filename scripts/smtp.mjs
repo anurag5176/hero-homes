@@ -140,7 +140,7 @@ async function command(socket, reader, line) {
 }
 
 async function authenticate(socket, reader, settings) {
-  let reply = await command(socket, reader, "EHLO herohomesgroups.in");
+  let reply = await command(socket, reader, "EHLO www.herohomesgroups.in");
   expect(reply, [250]);
   if (!settings.secure && /STARTTLS/i.test(reply.text)) {
     reply = await command(socket, reader, "STARTTLS");
@@ -149,7 +149,7 @@ async function authenticate(socket, reader, settings) {
     socket = tls.connect({ socket, servername: settings.host });
     await once(socket, "secureConnect");
     reader = openReader(socket);
-    reply = await command(socket, reader, "EHLO herohomesgroups.in");
+    reply = await command(socket, reader, "EHLO www.herohomesgroups.in");
     expect(reply, [250]);
   }
   reply = await command(socket, reader, "AUTH LOGIN");

@@ -12,7 +12,7 @@ npm start
 
 Production build: `npm run build`. It completed without errors.
 
-Canonical host is `https://herohomesgroups.in/`. Point the domain at this Node process, or at a host that can run it, and redirect HTTP and any other hostname to that HTTPS origin. Do not deploy the `qa/` or `data/leads/` folders.
+Canonical host is `https://www.herohomesgroups.in/`. Point the domain at this Node process, or at a host that can run it, and redirect HTTP and any other hostname to that HTTPS origin. Do not deploy the `qa/` or `data/leads/` folders.
 
 ## Lead capture
 
@@ -36,7 +36,7 @@ Call and WhatsApp appear only after `operator.phone` or `operator.whatsapp` is f
 - Title: Hero Homes Greater Noida | Price, Floor Plans & Payment Plans
 - Open Graph title: Hero Homes Greater Noida | 3 BHK Homes in Sector MU
 - One H1: Hero Homes Greater Noida
-- Canonical `https://herohomesgroups.in/`
+- Canonical `https://www.herohomesgroups.in/`
 - `robots.txt` allows crawling and points at the sitemap
 - Sitemap lists `/`, `/privacy` and `/terms` only
 - FAQ answers are in the HTML
