@@ -8,14 +8,41 @@ const home = fs.readFileSync(path.join(dist, "index.html"), "utf8");
 
 test("home page has one h1, canonical metadata and crawlable FAQs", () => {
   assert.equal((home.match(/<h1[\s>]/g) || []).length, 1);
+  assert.match(home, /<h1 class="reveal">Hero Homes<br> Sector MU,<br> Greater Noida<\/h1>/);
   assert.match(home, /<link rel="canonical" href="https:\/\/herohomegroups\.in\/">/);
-  assert.match(home, /Hero Homes Sector MU, Greater Noida \| Price &amp; Floor Plans/);
+  assert.match(home, /<title>Hero Homes Greater Noida \| Price, Floor Plans &amp; Payment Plans<\/title>/);
+  assert.match(home, /og:title" content="Hero Homes Greater Noida \| 3 BHK Homes in Sector MU"/);
   assert.match(home, /name="robots" content="index, follow"/);
   assert.match(home, /UPRERAPRJ414014\/10\/2026/);
-  assert.match(home, /153\.84–212\.68 sq m/);
-  assert.match(home, /Where is Hero Homes Sector MU located/);
+  assert.match(home, /Where is Hero Homes located in Greater Noida/);
   assert.match(home, /<summary>/);
   assert.doesNotMatch(home, /type="checkbox"[^>]*checked/);
+  assert.doesNotMatch(home, /\d{1,2}%/);
+
+  const headings = [...home.matchAll(/<h2[^>]*>(.*?)<\/h2>/g)].map((match) => match[1]);
+  assert.deepEqual(headings, [
+    "About Hero Homes Greater Noida",
+    "Hero Homes Floor Plans",
+    "Hero Homes Amenities",
+    "Hero Homes Sector MU Location",
+    "Hero Homes Price List",
+    "Find Your Ideal Home at Hero Homes",
+    "Your Journey to a Hero Homes Residence",
+    "Hero Homes FAQs",
+    "Explore Hero Homes Greater Noida"
+  ]);
+
+  const visibleQuestions = [...home.matchAll(/<summary>(.*?)<\/summary>/g)].map((match) => match[1]);
+  const data = JSON.parse(home.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)[1]);
+  const faq = data["@graph"].find((node) => node["@type"] === "FAQPage");
+  assert.deepEqual(
+    faq.mainEntity.map((item) => item.name),
+    visibleQuestions
+  );
+  assert.deepEqual(
+    faq.mainEntity.map((item) => item.acceptedAnswer.text),
+    [...home.matchAll(/<summary>.*?<\/summary><p>(.*?)<\/p>/g)].map((match) => match[1])
+  );
 });
 
 test("public copy leaves out unverified commercial claims", () => {

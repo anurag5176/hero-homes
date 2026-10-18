@@ -53,16 +53,9 @@ function showError(form, name, message) {
   if (error) error.textContent = message;
 }
 
-function applyContext(form, { type, configuration, section, label }) {
-  if (type && (titles[type] || label)) {
-    form.elements.enquiry_type.value = type;
-    const text = label || titles[type];
-    const title = form.querySelector(".form-title");
-    const button = form.querySelector("[type=submit]");
-    if (title) title.textContent = text;
-    if (button && form.dataset.state !== "success") button.textContent = text;
-  }
-  if (configuration && form.elements.configuration) {
+function applyContext(form, { type, configuration, section }) {
+  if (type && titles[type]) form.elements.enquiry_type.value = type;
+  if (form.elements.configuration && typeof configuration === "string") {
     const field = form.elements.configuration;
     if (field.options) {
       const exists = Array.from(field.options).some((option) => option.value === configuration);
@@ -134,16 +127,7 @@ async function submitForm(form) {
     }
 
     if (response.ok && body.ok) {
-      form.dataset.state = "success";
-      form.querySelectorAll(".field, .consent, .btn, .form-intro, .hp").forEach((el) => {
-        el.hidden = true;
-      });
-      const type = titles[form.elements.enquiry_type.value] || "your enquiry";
-      setStatus(
-        form,
-        "success",
-        `Your enquiry has been recorded (${type}). The project desk will contact you on the mobile number you entered. This is not a booking or a price guarantee.`
-      );
+      showConfirmation(form);
       return;
     }
 
@@ -181,7 +165,42 @@ async function submitForm(form) {
   }
 }
 
+const confirmationParts = ".field, .consent, .btn, .form-intro, .hp, .form-direct";
+
+function showConfirmation(form) {
+  if (form._resetTimer) clearTimeout(form._resetTimer);
+  form.dataset.state = "success";
+  form.querySelectorAll(confirmationParts).forEach((el) => {
+    el.hidden = true;
+  });
+  setStatus(form, "success", "Our team will reach out to you shortly with your requirements.");
+  form._resetTimer = setTimeout(() => {
+    restoreForm(form);
+    const popup = form.closest("dialog");
+    if (popup && popup.open) popup.close();
+  }, 6000);
+}
+
+function restoreForm(form) {
+  if (form._resetTimer) clearTimeout(form._resetTimer);
+  form._resetTimer = null;
+  delete form.dataset.state;
+  form.querySelectorAll(confirmationParts).forEach((el) => {
+    el.hidden = false;
+  });
+  const button = form.querySelector("[type=submit]");
+  form.reset();
+  if (button) {
+    button.disabled = false;
+    button.textContent = form.dataset.defaultButton || "Get Project Details";
+  }
+  clearErrors(form);
+  setStatus(form, "", "");
+}
+
 function bindForm(form) {
+  const button = form.querySelector("[type=submit]");
+  if (button) form.dataset.defaultButton = button.textContent;
   form.elements.enquiry_type.value = form.dataset.enquiry || "project_details";
   form.elements.section.value = form.dataset.section || "page";
   form.addEventListener("submit", (event) => {
@@ -190,24 +209,44 @@ function bindForm(form) {
   });
 }
 
-function focusLead(type, configuration, section, target, label) {
-  const form = document.getElementById(target || "form-dock");
-  if (!form) return;
-  applyContext(form, { type, configuration, section, label });
+function openEnquire({ type, configuration = "", section = "popup" }) {
+  const dialog = document.getElementById("enquiry-dialog");
+  const form = document.getElementById("form-popup");
+  if (!dialog || !form) return;
+  if (form.dataset.state === "success") restoreForm(form);
+  applyContext(form, { type, configuration, section });
+  if (!dialog.open) dialog.showModal();
+  document.body.classList.add("dialog-open");
   const name = form.elements.name;
-  if (name && !name.hidden) name.focus({ preventScroll: true });
+  if (name && !name.hidden) name.focus();
+}
+
+function watchScroll(dialog) {
+  let mark = window.scrollY;
+  window.addEventListener(
+    "scroll",
+    () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      if (max <= 0) return;
+      const y = window.scrollY;
+      if (dialog.open || document.body.classList.contains("input-focused")) {
+        mark = y;
+        return;
+      }
+      if (y < mark) mark = y;
+      if (y - mark >= max * 0.3) {
+        mark = y;
+        openEnquire({ type: "project_details", section: "scroll" });
+      }
+    },
+    { passive: true }
+  );
 }
 
 function sizeDock() {
   const header = document.querySelector(".site-header");
   if (header) document.documentElement.style.setProperty("--header", `${header.offsetHeight}px`);
-  const dock = document.getElementById("lead-dock");
-  const wide = window.matchMedia("(min-width: 1024px)").matches;
-  if (!dock || wide) {
-    document.documentElement.style.setProperty("--dock-space", "0px");
-    return;
-  }
-  document.documentElement.style.setProperty("--dock-space", `${dock.offsetHeight}px`);
+  document.documentElement.style.setProperty("--dock-space", "0px");
 }
 
 function init() {
@@ -216,12 +255,11 @@ function init() {
   document.querySelectorAll("[data-enquiry]").forEach((control) => {
     if (control.classList.contains("enquiry")) return;
     control.addEventListener("click", () => {
-      const type = control.getAttribute("data-enquiry");
-      const configuration = control.getAttribute("data-configuration") || "";
-      const section = control.getAttribute("data-section") || "page";
-      const target = control.getAttribute("data-target") || "form-dock";
-      const label = control.getAttribute("data-label") || "";
-      focusLead(type, configuration, section, target, label);
+      openEnquire({
+        type: control.getAttribute("data-enquiry"),
+        configuration: control.getAttribute("data-configuration") || "",
+        section: control.getAttribute("data-section") || "page"
+      });
     });
   });
 
@@ -231,6 +269,9 @@ function init() {
     dialog.addEventListener("click", (event) => {
       if (event.target === dialog) dialog.close();
     });
+    const close = dialog.querySelector("[data-close-dialog]");
+    if (close) close.addEventListener("click", () => dialog.close());
+    watchScroll(dialog);
   }
 
   const focusable = "input, select, textarea";

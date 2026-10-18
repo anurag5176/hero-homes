@@ -141,10 +141,6 @@ export const faqs = [
     a: "Submit an enquiry with your name and mobile number to request the floor plan for your preferred 3 BHK configuration."
   },
   {
-    q: "What are the Hero Homes payment plans?",
-    a: "Hero Homes payment plan details cover the applicable payment schedule and purchase terms. Contact the team to receive the current payment plan for your selected configuration."
-  },
-  {
     q: "What is included in the Hero Homes price list?",
     a: "The price list provides the applicable base price for the selected configuration. Additional charges may include GST, parking, floor charges, lease rent and deposits, depending on the applicable terms."
   },

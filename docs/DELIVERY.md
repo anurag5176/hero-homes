@@ -18,7 +18,7 @@ Canonical host is `https://herohomegroups.in/`. Point the domain at this Node pr
 
 The browser posts JSON to `/api/enquiry`. The server checks the name, a 10-digit Indian mobile number, an unticked-by-default consent box, the enquiry type and the optional configuration. A honeypot field and an in-memory rate limit sit in front of delivery.
 
-Enquiry types stored with the lead: `project_details`, `price_list`, `brochure`, `floor_plan`, `site_visit`, `advisor`. The floor-plan actions also store configuration `3 BHK`. UTM parameters, the landing path and the referrer are stored when present.
+Enquiry types stored with the lead: `project_details`, `price_list`, `brochure`, `floor_plan`, `payment_plan`, `site_visit`, `advisor`. A floor-plan action stores the configuration named on that plan. The payment-plan section does not state instalment percentages. UTM parameters, the landing path and the referrer are stored when present.
 
 Every enquiry button posts to that same endpoint. Delivery, in order:
 
@@ -33,8 +33,9 @@ Call and WhatsApp appear only after `operator.phone` or `operator.whatsapp` is f
 
 ## SEO
 
-- Title: Hero Homes Sector MU, Greater Noida | Price & Floor Plans
-- One H1: Hero Homes in Sector MU, Greater Noida
+- Title: Hero Homes Greater Noida | Price, Floor Plans & Payment Plans
+- Open Graph title: Hero Homes Greater Noida | 3 BHK Homes in Sector MU
+- One H1: Hero Homes Greater Noida
 - Canonical `https://herohomegroups.in/`
 - `robots.txt` allows crawling and points at the sitemap
 - Sitemap lists `/`, `/privacy` and `/terms` only

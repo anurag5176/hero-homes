@@ -28,22 +28,23 @@ const iconPaths = {
   map: '<path d="M9 4.5 3.5 6.5v13L9 17.5 15 19.5 20.5 17.5v-13L15 6.5z"/><path d="M9 4.5v13M15 6.5v13"/>',
   sheet: '<rect x="5" y="3.5" width="14" height="17" rx="1"/><path d="M8 8h8M8 12h8M8 16h4"/>',
   phone: '<path d="M8 3.8h2.2l1 2.6-1.5.9a9.6 9.6 0 0 0 4.6 4.6l.9-1.5 2.6 1V18a1.5 1.5 0 0 1-1.7 1.5A12.2 12.2 0 0 1 6.5 5.5 1.5 1.5 0 0 1 8 3.8z"/>',
+  user: '<circle cx="12" cy="8" r="3"/><path d="M5.5 19.2c.8-2.8 2.9-4.2 6.5-4.2s5.7 1.4 6.5 4.2"/>',
   calendar: '<rect x="4" y="5" width="16" height="15" rx="1.5"/><path d="M8 3.5V6M16 3.5V6M4 10h16"/>'
 };
 
 const amenityIcons = {
+  Clubhouse: "home",
+  Gymnasium: "gym",
+  "Swimming Pool": "spa",
   Restaurant: "utensils",
-  Gym: "gym",
-  "Biophilic lounge": "leaf",
-  "Banquet hall with courtyard": "banquet",
-  "Meditation centre": "calm",
-  "Spa and salon": "spa",
-  "Children’s play": "kids",
-  "Library and art corner": "book",
-  "Swimming pool": "spa",
-  "Mini theatre": "banquet",
-  "Sports courts": "gym",
-  "Landscaped gardens": "leaf"
+  "Biophilic Lounge": "leaf",
+  "Banquet Hall with Courtyard": "banquet",
+  "Meditation Centre": "calm",
+  "Spa and Salon": "spa",
+  "Children's Play Areas": "kids",
+  "Library and Art Corner": "book",
+  "Mini Theatre": "banquet",
+  "Sports Courts and Landscaped Gardens": "leaf"
 };
 
 function icon(name) {
@@ -58,30 +59,47 @@ function logo(className = "logo") {
   return `<img class="${className}" src="/assets/herologo.webp" width="240" height="240" alt="Hero Homes">`;
 }
 
-function formMarkup({ id, enquiry, section, title, intro }) {
+function formDirect() {
+  if (!site.operator.phone) return "";
+  const tel = phoneTel(site.operator.phone);
+  const wa = `91${phoneDigits(site.operator.phone)}`;
+  const text = encodeURIComponent("Hello, I am enquiring about Hero Homes in Sector MU, Greater Noida.");
+  return `<div class="form-direct">
+    <a href="tel:${escapeHtml(tel)}">${icon("phone")}<span>Call Now</span></a>
+    <a href="https://wa.me/${wa}?text=${text}" target="_blank" rel="noopener noreferrer"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2A8.7 8.7 0 0 0 4.55 16.3L3.4 20.6l4.4-1.15A8.7 8.7 0 1 0 12 3.2zm5.02 12.25c-.21.6-1.22 1.13-1.7 1.15-.43.02-.85.2-2.88-.6-2.42-.97-3.96-3.37-4.08-3.53-.12-.16-.99-1.32-.99-2.52s.62-1.78.85-2.03c.2-.23.46-.29.62-.29h.44c.14 0 .33-.05.52.4.2.47.69 1.64.75 1.76.06.12.1.26.02.41-.08.16-.12.26-.23.4-.12.13-.24.3-.35.41-.11.12-.23.24-.1.46.14.23.61 1.01 1.32 1.63.9.81 1.67 1.07 1.91 1.19.24.11.37.1.51-.06.14-.16.59-.69.75-.93.16-.24.31-.2.52-.12.22.08 1.35.64 1.58.75.23.12.38.17.44.27.06.1.06.57-.15 1.16z"/></svg><span>WhatsApp</span></a>
+  </div>`;
+}
+
+function formMarkup({ id, enquiry, section, title, intro, button, direct = true, compact = false }) {
+  const brand = compact
+    ? `<p class="form-title">${escapeHtml(title)}</p>`
+    : `<div class="form-brand">${logo("logo logo-form")}<p class="form-title">${escapeHtml(title)}</p></div>`;
+  const lead = intro ? `<p class="form-intro">${escapeHtml(intro)}</p>` : "";
   return `<form class="enquiry" id="${id}" data-enquiry="${enquiry}" data-section="${section}" novalidate>
-    <div class="form-brand">${logo("logo logo-form")}</div>
-    <h2 class="form-title">${escapeHtml(title)}</h2>
-    <p class="form-intro">${escapeHtml(intro)}</p>
-    <div class="dock-fields">
-      <div class="field">
-        <label for="${id}-name">Full name</label>
-        <input id="${id}-name" name="name" type="text" autocomplete="name" maxlength="80" required>
-        <p class="field-error" data-error-for="name"></p>
+    ${brand}
+    ${lead}
+    <div class="field">
+      <label class="visually-hidden" for="${id}-name">Full name</label>
+      <div class="field-icon">
+        ${icon("user")}
+        <input id="${id}-name" name="name" type="text" autocomplete="name" maxlength="80" placeholder="Full name" required>
       </div>
-      <div class="field">
-        <label for="${id}-phone">Mobile number</label>
-        <input id="${id}-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" required>
-        <p class="field-error" data-error-for="phone"></p>
+      <p class="field-error" data-error-for="name"></p>
+    </div>
+    <div class="field">
+      <label class="visually-hidden" for="${id}-phone">Mobile number</label>
+      <div class="field-icon">
+        ${icon("phone")}
+        <input id="${id}-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" placeholder="Mobile number" required>
       </div>
+      <p class="field-error" data-error-for="phone"></p>
     </div>
     <input type="hidden" name="configuration" value="">
     <input type="hidden" name="contact_method" value="">
     <div class="consent">
       <input id="${id}-consent" name="consent" type="checkbox" value="yes">
       <div>
-        <label for="${id}-consent">I agree to be contacted about Leafsong Retreat in Sector MU on this number.</label>
-        <a href="/privacy">Privacy policy</a>
+        <label for="${id}-consent">I agree to be contacted about Hero Homes Sector MU on this number. <a href="/privacy">Privacy policy</a>.</label>
         <p class="field-error" data-error-for="consent"></p>
       </div>
     </div>
@@ -91,9 +109,57 @@ function formMarkup({ id, enquiry, section, title, intro }) {
     </div>
     <input type="hidden" name="enquiry_type" value="${enquiry}">
     <input type="hidden" name="section" value="${section}">
-    <button class="btn btn-accent btn-block" type="submit">${escapeHtml(title)}</button>
+    <button class="btn btn-accent btn-block" type="submit">${escapeHtml(button || title)}</button>
     <p class="form-status" role="status" aria-live="polite"></p>
+    ${direct ? formDirect() : ""}
   </form>`;
+}
+
+function enquireDialog() {
+  return `<dialog id="enquiry-dialog" aria-labelledby="enquiry-dialog-title">
+    <form class="enquiry enquiry-popup" id="form-popup" data-enquiry="project_details" data-section="popup" novalidate>
+      <div class="dialog-head">
+        <p id="enquiry-dialog-title">Enquire Now</p>
+        <button class="icon-btn" type="button" data-close-dialog aria-label="Close">×</button>
+      </div>
+      <div class="dialog-body">
+        <p class="form-intro">Share your name and mobile number.</p>
+        <div class="field">
+          <label class="visually-hidden" for="form-popup-name">Full name</label>
+          <div class="field-icon">
+            ${icon("user")}
+            <input id="form-popup-name" name="name" type="text" autocomplete="name" maxlength="80" placeholder="Full name" required>
+          </div>
+          <p class="field-error" data-error-for="name"></p>
+        </div>
+        <div class="field">
+          <label class="visually-hidden" for="form-popup-phone">Mobile number</label>
+          <div class="field-icon">
+            ${icon("phone")}
+            <input id="form-popup-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" placeholder="Mobile number" required>
+          </div>
+          <p class="field-error" data-error-for="phone"></p>
+        </div>
+        <input type="hidden" name="configuration" value="">
+        <input type="hidden" name="contact_method" value="">
+        <div class="consent">
+          <input id="form-popup-consent" name="consent" type="checkbox" value="yes">
+          <div>
+            <label for="form-popup-consent">I agree to be contacted about Hero Homes Sector MU on this number. <a href="/privacy">Privacy policy</a>.</label>
+            <p class="field-error" data-error-for="consent"></p>
+          </div>
+        </div>
+        <div class="hp" aria-hidden="true">
+          <label for="form-popup-company">Company website</label>
+          <input id="form-popup-company" name="company" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <input type="hidden" name="enquiry_type" value="project_details">
+        <input type="hidden" name="section" value="popup">
+        <button class="btn btn-accent btn-block" type="submit">Enquire Now</button>
+        <p class="form-status" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+  </dialog>`;
 }
 
 function phoneDigits(value) {
@@ -147,16 +213,18 @@ function header(active) {
       </a>
       <nav class="nav" aria-label="Page">
         <a href="/#overview">About</a>
-        <a href="/#homes">Floor plans</a>
+        <a href="/#homes">Floor Plans</a>
+        <a href="/#amenities">Amenities</a>
         <a href="/#location">Location</a>
         <a href="/#pricing">Price</a>
+        <a href="/#contact">Contact</a>
       </nav>
       <div class="header-actions">
         ${callCapsule()}
         ${
           active === "home"
-            ? `<button class="btn header-cta" type="button" data-enquiry="brochure" data-section="header" data-target="form-dock">Request brochure</button>`
-            : `<a class="btn header-cta" href="/#pricing">Request brochure</a>`
+            ? `<button class="btn header-cta" type="button" data-enquiry="brochure" data-section="header" data-target="form-dock">Download Brochure</button>`
+            : `<a class="btn header-cta" href="/#enquire">Download Brochure</a>`
         }
       </div>
     </div>
@@ -172,46 +240,46 @@ function footer() {
       <div class="footer-brand">
         ${logo("logo logo-footer")}
         <p class="footer-kicker">Authorised channel partner</p>
-        <h2>Hero Homes</h2>
-        <p>Leafsong Retreat at Plot GH-02, Sector MU, Greater Noida. A 3 BHK project of Hero Realty Private Limited, presented on this page by an authorised channel partner.</p>
+        <p class="footer-title">Hero Homes Greater Noida</p>
+        <p>Explore 3 BHK residences at Hero Homes Sector MU, Greater Noida. View floor plans, pricing, amenities and location details.</p>
       </div>
       <div>
-        <h2>Navigation</h2>
+        <p class="footer-heading">Quick Links</p>
         <ul>
-          <li><a href="/#overview">About</a></li>
-          <li><a href="/#pricing">Price</a></li>
-          <li><a href="/#homes">Floor plans</a></li>
+          <li><a href="/#overview">About Hero Homes</a></li>
+          <li><a href="/#homes">Hero Homes Floor Plans</a></li>
+          <li><a href="/#pricing">Hero Homes Price List</a></li>
           <li><a href="/#amenities">Amenities</a></li>
           <li><a href="/#location">Location</a></li>
           <li><a href="/#faq">FAQs</a></li>
+          <li><a href="/#contact">Contact</a></li>
         </ul>
       </div>
       <div>
-        <h2>Homes</h2>
-        <ul>
-          <li><a href="/#homes">3 BHK + 2 toilets, 1,650 sq. ft.</a></li>
-          <li><a href="/#homes">3 BHK + 3 toilets, 1,850 sq. ft.</a></li>
-          <li><a href="/#homes">3 BHK + servant room, 2,200 sq. ft.</a></li>
-          <li><a href="/#pricing">Price list</a></li>
-        </ul>
-      </div>
-      <div>
-        <h2>Project</h2>
+        <p class="footer-heading">Project Details</p>
         <ul class="footer-facts">
-          <li>${icon("pin")}<span>${escapeHtml(p.address)}</span></li>
+          <li>${icon("plan")}<span>Project: ${escapeHtml(p.marketedName)}</span></li>
+          <li>${icon("pin")}<span>Location: ${escapeHtml(p.address)}</span></li>
+          <li>${icon("home")}<span>Developer: ${escapeHtml(p.developer)}</span></li>
+          <li>${icon("sheet")}<span>UP RERA: ${escapeHtml(p.rera)}</span></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-heading">Contact</p>
+        <ul class="footer-facts">
           ${phone ? `<li>${icon("phone")}<span>${phone}</span></li>` : ""}
-          <li>${icon("sheet")}<span>UP RERA ${escapeHtml(p.rera)}</span></li>
-          <li>${icon("plan")}<span>Developer: Hero Realty Private Limited</span></li>
+          <li>${icon("map")}<span><a href="${escapeHtml(p.officialUrl)}">Official project website</a></span></li>
+          <li>${icon("sheet")}<span><a href="${escapeHtml(p.reraPortal)}">UP RERA</a></span></li>
         </ul>
       </div>
     </div>
     <div class="wrap footer-base" id="disclaimer">
-      <p class="footer-disclaimer"><strong>Disclaimer.</strong> This website is published by an authorised channel partner for enquiries about Leafsong Retreat by Hero Homes, Sector MU. It is not the developer’s website, and nothing on it is an offer, an allotment, or a contract. The starting price of ${escapeHtml(p.startingPrice)} and the introductory basic sale price of ${escapeHtml(p.bsp)} until ${escapeHtml(p.bspUntil)} are indications. They can change, and GST and other charges are extra. Sizes, plans, and possession dates are subject to the developer’s current documents. Images on this page are design renders. The project is registered with UP RERA as ${escapeHtml(p.rera)}. That registration can be checked on the UP RERA portal.</p>
+      <p class="footer-disclaimer">This website is published by an authorised channel partner for enquiries about Leafsong Retreat by Hero Homes. It is not the developer's website. Prices, payment terms, availability and project details are subject to applicable terms and official project documents. Images may be illustrative renders. The project is registered with UP RERA under ${escapeHtml(p.rera)}.</p>
       <div class="footer-end">
         <p class="footer-copy">© 2026 Authorised channel partner for Hero Homes, Sector MU. Leafsong Retreat is a project of Hero Realty Private Limited.</p>
         <nav class="footer-links" aria-label="Legal">
-          <a href="/privacy">Privacy policy</a>
-          <a href="/terms">Terms</a>
+          <a href="/privacy">Privacy Policy</a>
+          <a href="/terms">Terms &amp; Conditions</a>
           <a href="#disclaimer">Disclaimer</a>
         </nav>
       </div>
@@ -232,7 +300,7 @@ function structuredData() {
         "@type": "WebSite",
         "@id": `${site.domain}/#website`,
         url: `${site.domain}/`,
-        name: "Hero Homes Sector MU project information",
+        name: "Hero Homes Greater Noida",
         description: site.description,
         inLanguage: "en-IN"
       },
@@ -249,10 +317,11 @@ function structuredData() {
       {
         "@type": "ApartmentComplex",
         "@id": `${site.domain}/#project`,
-        name: p.marketedName,
-        url: p.officialUrl,
-        description:
-          "3 BHK homes at Leafsong Retreat in Sector MU, Greater Noida. Starting price ₹1.80 Cr.",
+        name: "Hero Homes Greater Noida",
+        alternateName: p.marketedName,
+        url: `${site.domain}/`,
+        sameAs: p.officialUrl,
+        description: site.description,
         address: {
           "@type": "PostalAddress",
           streetAddress: "Plot GH-02, Sector MU",
@@ -282,8 +351,10 @@ function structuredData() {
   return JSON.stringify(graph);
 }
 
-function head({ title, description, path, robots = "index, follow" }) {
+function head({ title, description, path, robots = "index, follow", ogTitle, ogDescription }) {
   const url = new URL(path, site.domain).href;
+  const socialTitle = ogTitle || title;
+  const socialDescription = ogDescription || description;
   return `<!doctype html>
 <html lang="en-IN">
 <head>
@@ -295,13 +366,13 @@ function head({ title, description, path, robots = "index, follow" }) {
   <link rel="canonical" href="${url}">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="en_IN">
-  <meta property="og:site_name" content="Hero Homes Sector MU">
-  <meta property="og:title" content="${escapeHtml(title)}">
-  <meta property="og:description" content="${escapeHtml(description)}">
+  <meta property="og:site_name" content="Hero Homes Greater Noida">
+  <meta property="og:title" content="${escapeHtml(socialTitle)}">
+  <meta property="og:description" content="${escapeHtml(socialDescription)}">
   <meta property="og:url" content="${url}">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="${escapeHtml(title)}">
-  <meta name="twitter:description" content="${escapeHtml(description)}">
+  <meta name="twitter:title" content="${escapeHtml(socialTitle)}">
+  <meta name="twitter:description" content="${escapeHtml(socialDescription)}">
   <meta name="theme-color" content="#ffffff">
   <link rel="icon" href="/assets/herologo.png" type="image/png" sizes="240x240">
   <link rel="apple-touch-icon" href="/assets/herologo.png">
@@ -313,26 +384,50 @@ function head({ title, description, path, robots = "index, follow" }) {
 }
 
 export function renderHome() {
-  const distanceRows = site.distances
+  const planLabels = ["Get 3 BHK Floor Plan", "Get 3 BHK Floor Plan", "Get Floor Plan & Price"];
+  const highlights = [
+    ["Location", "Sector MU, Greater Noida"],
+    ["Project", p.marketedName],
+    ["Configurations", "3 BHK residences"],
+    ["Advertised sizes", "1,650–2,200 sq. ft."],
+    ["Development area", `Approximately ${p.land}`],
+    ["Residential towers", "3"],
+    ["Clubhouse", `Approximately ${p.clubhouse}`],
+    ["Starting price", p.startingPrice],
+    ["UP RERA registration", p.rera],
+    ["Possession timeline", p.possession]
+  ];
+  const highlightItems = highlights
     .map(
-      ([place, distance]) =>
-        `<tr><td>${escapeHtml(place)}</td><td>${escapeHtml(distance)}</td></tr>`
+      ([label, value]) =>
+        `<tr><th scope="row">${escapeHtml(label)}</th><td>${escapeHtml(value)}</td></tr>`
     )
+    .join("");
+  const placeGroups = site.places
+    .map(([group, items]) => {
+      const list = items
+        .map(([place, distance]) => {
+          const note = distance ? `<span>${escapeHtml(distance)}</span>` : "";
+          return `<li><span>${escapeHtml(place)}</span>${note}</li>`;
+        })
+        .join("");
+      return `<div class="place-group"><p class="place-label">${escapeHtml(group)}</p><ul>${list}</ul></div>`;
+    })
     .join("");
   const homeCards = site.homes
     .map(
       ([name, size, note, price], index) => `<article class="plan card reveal">
           <div>
-            <h3 class="plan-title">${iconPlate("home")}<span>${escapeHtml(name)}</span></h3>
+            <h3 class="plan-title">${iconPlate("home")}<span>${escapeHtml(name)} Floor Plan</span></h3>
             <div class="plan-meta">
               <div><span>Size</span><strong>${escapeHtml(size)}</strong></div>
-              <div><span>Starting price</span><strong>${escapeHtml(price)}</strong></div>
+              <div><span>${price.startsWith("₹") ? "Starting Price" : "Price"}</span><strong>${escapeHtml(price)}</strong></div>
             </div>
             <p>${escapeHtml(note)}</p>
           </div>
           <figure class="shot shot-locked" data-slot="plan-${index}">
             <div class="shot-frame"></div>
-            <button class="btn plan-download" type="button" data-enquiry="floor_plan" data-configuration="3 BHK" data-section="homes" data-target="form-dock">Download floor plan</button>
+            <button class="btn plan-download" type="button" data-enquiry="floor_plan" data-configuration="${escapeHtml(name)}" data-label="${escapeHtml(planLabels[index])}" data-section="homes" data-target="form-dock">${escapeHtml(planLabels[index])}</button>
           </figure>
         </article>`
     )
@@ -350,44 +445,71 @@ export function renderHome() {
     )
     .join("");
 
-  return `${head({ title: site.title, description: site.description, path: "/" })}
+  return `${head({
+    title: site.title,
+    description: site.description,
+    path: "/",
+    ogTitle: site.ogTitle,
+    ogDescription: site.ogDescription
+  })}
 <body class="has-dock">
   ${header("home")}
-  <div class="page-shell">
-  <main id="content" class="story">
+  <main id="content">
     <section class="hero screen" id="enquire">
       <div class="hero-media" aria-hidden="true"></div>
-      <div class="wrap">
-        <p class="kicker reveal">Leafsong Retreat · Sector MU</p>
-        <h1 class="reveal">Hero Homes Sector MU, Greater Noida</h1>
-        <p class="lede reveal">Premium 3 BHK residences on ${escapeHtml(p.land)}. Homes start at ${escapeHtml(p.startingPrice)}. Introductory price ${escapeHtml(p.bsp)} until ${escapeHtml(p.bspUntil)}.</p>
-        <dl class="hero-facts reveal">
-          <div>${iconPlate("pin")}<div><dt>Location</dt><dd>${escapeHtml(p.location)}</dd></div></div>
-          <div>${iconPlate("home")}<div><dt>Homes</dt><dd>3 BHK · 1,650–2,200 sq. ft.</dd></div></div>
-          <div>${iconPlate("price")}<div><dt>Starting price</dt><dd>${escapeHtml(p.startingPrice)}</dd></div></div>
-          <div>${iconPlate("towers")}<div><dt>Scale</dt><dd>3 towers · ${escapeHtml(p.land)}</dd></div></div>
-          <div>${iconPlate("sheet")}<div><dt>RERA</dt><dd>${escapeHtml(p.rera)}</dd></div></div>
-          <div>${iconPlate("calendar")}<div><dt>Possession</dt><dd>${escapeHtml(p.possession)}</dd></div></div>
-        </dl>
+      <div class="hero-layout">
+        <div class="hero-copy">
+          <p class="kicker reveal">Premium residences</p>
+          <h1 class="reveal"><span class="hero-mark">Hero</span> Homes<br> Sector MU,<br> Greater Noida</h1>
+          <p class="lede reveal">A thoughtfully planned community with spacious 3 BHK residences, modern amenities and a connected address in the heart of Greater Noida.</p>
+          <ul class="hero-points reveal">
+            <li>${iconPlate("home")}<span>Spacious 3 BHK Homes</span></li>
+            <li>${iconPlate("towers")}<span>3 Towers on 4.5 Acres</span></li>
+            <li>${iconPlate("leaf")}<span>Modern Lifestyle Amenities</span></li>
+          </ul>
+        </div>
+        <aside class="hero-card" aria-label="Enquiry">
+          ${formMarkup({
+            id: "form-hero",
+            enquiry: "project_details",
+            section: "hero",
+            title: "Enquire now",
+            button: "Submit",
+            intro: "",
+            direct: false,
+            compact: true
+          })}
+        </aside>
       </div>
+      <dl class="hero-strip">
+        <div>${iconPlate("pin")}<div><dt>Location</dt><dd>Sector MU, Greater Noida</dd></div></div>
+        <div>${iconPlate("home")}<div><dt>Homes</dt><dd>3 BHK, 1,650–2,200 sq. ft.</dd></div></div>
+        <div class="strip-price">${iconPlate("price")}<div><dt>Starting price</dt><dd>${escapeHtml(p.startingPrice)}<small>Introductory price ${escapeHtml(p.bsp)} until ${escapeHtml(p.bspUntil)}.</small></dd></div></div>
+        <div class="strip-rera">${iconPlate("sheet")}<div><dt>RERA registration</dt><dd>${escapeHtml(p.rera)}</dd></div></div>
+        <div>${iconPlate("calendar")}<div><dt>Possession</dt><dd>${escapeHtml(p.possession)}</dd></div></div>
+      </dl>
     </section>
-
+    <div class="page-shell">
+    <div class="story">
     <section class="section" id="overview">
       <div class="wrap">
         <div class="section-head reveal">
-          <h2>About Hero Homes in Sector MU</h2>
-          <p>Leafsong Retreat is our residential address in Sector MU, Greater Noida. Three 30-storey towers rise over a pedestrian podium, with a clubhouse of ${escapeHtml(p.clubhouse)} and planted open space across ${escapeHtml(p.land)}.</p>
+          <h2>About Hero Homes Greater Noida</h2>
+          <p>Hero Homes brings premium residential living to Sector MU, Greater Noida, with a collection of spacious 3 BHK residences, landscaped surroundings and lifestyle amenities.</p>
+          <p>Set across approximately ${escapeHtml(p.land)}, the development comprises three residential towers and a clubhouse designed to bring recreation, wellness and social spaces closer to home.</p>
+          <p>Whether you are looking for a spacious family home or comparing premium apartments in Greater Noida, Hero Homes offers multiple 3 BHK configurations to explore.</p>
         </div>
         <div class="split">
           ${shot("overview")}
-          <div class="prose card reveal">
-            <h3>A 3 BHK community</h3>
-            <p>The homes run from 1,650 sq. ft. to 2,200 sq. ft., inside ${escapeHtml(p.areaLabel)}. Families get three bedrooms, with a choice of two bathrooms, three bathrooms, or a servant room.</p>
-            <p>Possession is ${escapeHtml(p.possession)}. The project is registered with UP RERA as ${escapeHtml(p.rera)}.</p>
+          <div class="card highlight-card reveal">
+            <h3>Hero Homes Project Highlights</h3>
+            <table class="spec-table">
+              <tbody>${highlightItems}</tbody>
+            </table>
           </div>
         </div>
         <div class="actions">
-          <button class="btn" type="button" data-enquiry="project_details" data-section="overview" data-target="form-dock">Request project details</button>
+          <button class="btn" type="button" data-enquiry="brochure" data-section="overview" data-target="form-dock">Request Project Brochure</button>
         </div>
       </div>
     </section>
@@ -395,40 +517,46 @@ export function renderHome() {
     <section class="section" id="homes">
       <div class="wrap">
         <div class="section-head reveal">
-          <h2>Hero Homes 3 BHK floor plans</h2>
-          <p>Three layouts, from a 1,650 sq. ft. home to a 2,200 sq. ft. home with a servant room. Sizes sit inside ${escapeHtml(p.areaLabel)}.</p>
+          <h2>Hero Homes Floor Plans</h2>
+          <p>Explore Hero Homes floor plans designed for different family requirements. Choose from three advertised 3 BHK configurations, with options for two toilets, three toilets or an additional servant room.</p>
+          <p>Compare the available layouts, apartment sizes and pricing to find the configuration that suits your needs.</p>
         </div>
         <div class="plan-list">${homeCards}</div>
+        <p class="section-close">Compare Hero Homes floor plans and get the latest details for your preferred configuration.</p>
       </div>
     </section>
 
     <section class="section" id="amenities">
       <div class="wrap">
         <div class="section-head reveal">
-          <h2>Amenities at Hero Homes Sector MU</h2>
-          <p>A ${escapeHtml(p.clubhouse)} clubhouse, a swimming pool, fitness and play, set in landscaped open space on a vehicle-free podium.</p>
+          <h2>Hero Homes Amenities</h2>
+          <p>Experience a residential environment that brings together recreation, wellness and landscaped open spaces. The planned amenities at Hero Homes are designed to complement everyday routines, family time and community living.</p>
         </div>
         ${shot("amenities", "shot-wide")}
         <div class="amenities">${amenityItems}</div>
+        <div class="actions">
+          <button class="btn" type="button" data-enquiry="brochure" data-label="Request Amenities Brochure" data-section="amenities" data-target="form-dock">Request Amenities Brochure</button>
+        </div>
       </div>
     </section>
 
     <section class="section" id="location">
       <div class="wrap">
         <div class="section-head reveal">
-          <h2>Hero Homes Sector MU location</h2>
-          <p>${escapeHtml(p.address)}. Sector MU connects to Pari Chowk, Knowledge Park, the Noida–Greater Noida Expressway and the wider road to Jewar.</p>
+          <h2>Hero Homes Sector MU Location</h2>
+          <p>Hero Homes is located in Sector MU, Greater Noida, with access to key destinations across the city and the wider NCR region.</p>
+          <p>The location connects residents to educational institutions, healthcare facilities, shopping destinations, recreational spaces and important road corridors.</p>
         </div>
         <div class="split">
-          <iframe class="map-embed" title="Leafsong Retreat by Hero Homes, Sector MU, Greater Noida" src="${p.mapEmbed}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
-          <div class="table-wrap card reveal">
-            <table>
-              <thead>
-                <tr><th scope="col">Nearby</th><th scope="col">Distance</th></tr>
-              </thead>
-              <tbody>${distanceRows}</tbody>
-            </table>
+          <iframe class="map-embed" title="Hero Homes, Sector MU, Greater Noida" src="${p.mapEmbed}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+          <div class="card reveal">
+            <h3>Connectivity and Nearby Destinations</h3>
+            <div class="place-groups">${placeGroups}</div>
+            <p class="address-line"><strong>Project Address:</strong> ${escapeHtml(p.address)}.</p>
           </div>
+        </div>
+        <div class="actions">
+          <button class="btn" type="button" data-enquiry="project_details" data-label="Get Location Details" data-section="location" data-target="form-dock">Get Location Details</button>
         </div>
       </div>
     </section>
@@ -436,18 +564,19 @@ export function renderHome() {
     <section class="section" id="pricing">
       <div class="wrap">
         <div class="section-head reveal">
-          <h2>Hero Homes Sector MU price list</h2>
-          <p>Homes start at ${escapeHtml(p.startingPrice)}. The introductory basic sale price is ${escapeHtml(p.bsp)} until ${escapeHtml(p.bspUntil)}.</p>
+          <h2>Hero Homes Price List</h2>
+          <p>Explore the Hero Homes price list for the available 3 BHK configurations in Sector MU, Greater Noida.</p>
+          <p>The starting price is ${escapeHtml(p.startingPrice)} for the advertised 1,650 sq. ft. 3 BHK + 2 toilets configuration. Pricing for other configurations is available on request.</p>
         </div>
         <div class="card price-card reveal">
           <div class="table-wrap">
             <table>
-              <caption>Introductory basic sale price ${escapeHtml(p.bsp)} until ${escapeHtml(p.bspUntil)}. GST, parking, floor charges, lease rent and deposits are extra.</caption>
+              <caption>The basic sale price is exclusive of applicable additional charges, which may include GST, parking, floor charges, lease rent and deposits.</caption>
               <thead>
                 <tr>
-                  <th scope="col">Home</th>
+                  <th scope="col">Configuration</th>
                   <th scope="col">Size</th>
-                  <th scope="col">Starting price</th>
+                  <th scope="col">Starting Price</th>
                 </tr>
               </thead>
               <tbody>
@@ -460,8 +589,9 @@ export function renderHome() {
               </tbody>
             </table>
           </div>
+          <p class="section-close">Get the latest Hero Homes price list to understand the cost of your preferred configuration.</p>
           <div class="actions">
-            <button class="btn" type="button" data-enquiry="price_list" data-section="pricing" data-target="form-dock">Get the latest price list</button>
+            <button class="btn" type="button" data-enquiry="price_list" data-label="Get Complete Price List" data-section="pricing" data-target="form-dock">Get Complete Price List</button>
           </div>
         </div>
       </div>
@@ -470,30 +600,37 @@ export function renderHome() {
     <section class="section" id="suitability">
       <div class="wrap">
         <div class="section-head reveal">
-          <h2>Who Hero Homes Sector MU is for</h2>
-          <p>Families who want a 3 BHK in Greater Noida, with a clubhouse, open space and a registered project.</p>
+          <h2>Find Your Ideal Home at Hero Homes</h2>
         </div>
         <div class="suit">
           <article class="card reveal">
             ${iconPlate("family")}
-            <h3>Families</h3>
-            <p>Three bedrooms from 1,650 sq. ft., with play areas, a pool and schools within a short drive of Sector MU.</p>
+            <h3>Spacious Family Living</h3>
+            <p>Explore three-bedroom residences with different layouts to accommodate your family's space and privacy requirements.</p>
+          </article>
+          <article class="card reveal">
+            ${iconPlate("home")}
+            <h3>More Room for Everyday Living</h3>
+            <p>Compare the larger advertised configurations, including the option with a separate servant room.</p>
+          </article>
+          <article class="card reveal">
+            ${iconPlate("leaf")}
+            <h3>Lifestyle and Recreation</h3>
+            <p>Explore the clubhouse, recreational facilities and landscaped spaces planned within the residential community.</p>
           </article>
           <article class="card reveal">
             ${iconPlate("map")}
-            <h3>Greater Noida</h3>
-            <p>Plot GH-02, Sector MU, with Pari Chowk, Knowledge Park and the expressway close by.</p>
+            <h3>A Greater Noida Address</h3>
+            <p>Consider Sector MU for access to Greater Noida's educational, healthcare, shopping and road-connectivity network.</p>
           </article>
           <article class="card reveal">
             ${iconPlate("sheet")}
-            <h3>A clear price</h3>
-            <p>Start at ${escapeHtml(p.startingPrice)}, then take the cost sheet for the layout, the floor and the charges that sit outside the basic price.</p>
+            <h3>A Clearer Purchase Decision</h3>
+            <p>Compare floor plans, pricing, payment terms and additional charges before selecting your preferred home.</p>
           </article>
-          <article class="card reveal">
-            ${iconPlate("plan")}
-            <h3>A registered home</h3>
-            <p>UP RERA ${escapeHtml(p.rera)}, with possession in ${escapeHtml(p.possession)}.</p>
-          </article>
+        </div>
+        <div class="actions">
+          <a class="btn" href="#homes">Explore Available Configurations</a>
         </div>
       </div>
     </section>
@@ -501,17 +638,17 @@ export function renderHome() {
     <section class="section" id="process">
       <div class="wrap">
         <div class="section-head reveal">
-          <h2>Move in, step by step</h2>
+          <h2>Your Journey to a Hero Homes Residence</h2>
         </div>
         <ol class="steps">
-          <li>Tell us the 3 BHK you want and we send the price list and floor plan.</li>
-          <li>We walk you through GST, parking and any floor charge on that home.</li>
-          <li>You choose the tower and floor that are open.</li>
-          <li>We arrange a site visit at Sector MU.</li>
-          <li>You book under UP RERA ${escapeHtml(p.rera)}, with possession in ${escapeHtml(p.possession)}.</li>
+          <li><div><h3>Explore the Floor Plans</h3><p>Choose the 3 BHK configuration that fits your space requirements and budget.</p></div></li>
+          <li><div><h3>Get the Price List</h3><p>Receive the current pricing and configuration details for your preferred home.</p></div></li>
+          <li><div><h3>Understand the Payment Plan</h3><p>Review the applicable payment schedule, booking terms and additional charges.</p></div></li>
+          <li><div><h3>Arrange a Site Visit</h3><p>Explore the Sector MU location and learn more about the project.</p></div></li>
+          <li><div><h3>Take the Next Step</h3><p>Discuss the available units, applicable terms and booking process with the project team.</p></div></li>
         </ol>
         <div class="actions">
-          <button class="btn" type="button" data-enquiry="site_visit" data-section="process" data-target="form-dock">Arrange a site visit</button>
+          <button class="btn" type="button" data-enquiry="site_visit" data-section="process" data-target="form-dock">Schedule a Site Visit</button>
         </div>
       </div>
     </section>
@@ -519,40 +656,42 @@ export function renderHome() {
     <section class="section" id="faq">
       <div class="wrap">
         <div class="section-head reveal">
-          <h2>Frequently asked questions</h2>
+          <h2>Hero Homes FAQs</h2>
         </div>
         <div class="faq">${faqItems}</div>
       </div>
     </section>
 
-    <section class="section" id="visit">
+    <section class="section" id="contact">
       <div class="wrap">
         <div class="section-head reveal">
-          <h2>Get the latest Hero Homes details</h2>
-          <p>Leave your name and number. We will call you with the price list, the floor plan and a time to visit Sector MU.</p>
+          <h2>Explore Hero Homes Greater Noida</h2>
+          <p>Find your preferred 3 BHK configuration at Hero Homes Sector MU. Get the floor plans, price list and payment plan details to take the next step towards your new home.</p>
         </div>
-        <div class="split">
-          ${shot("visit")}
-          <div class="card reveal prose">
-            <p>Call or WhatsApp ${escapeHtml(phoneLabel(site.operator.phone))} if you would rather speak now. Possession is ${escapeHtml(p.possession)}.</p>
-            <div class="actions">
-              <button class="btn" type="button" data-enquiry="advisor" data-section="visit" data-target="form-dock">Speak to the project advisor</button>
-            </div>
+        <figure class="visit-card reveal">
+          <div class="shot-frame" aria-hidden="true"></div>
+          <div class="visit-overlay">
+            <p>Prefer to speak directly? Call or WhatsApp <a href="tel:${escapeHtml(phoneTel(site.operator.phone))}">${escapeHtml(phoneLabel(site.operator.phone))}</a>.</p>
+            <button class="btn btn-accent" type="button" data-enquiry="project_details" data-section="contact">Get Project Details</button>
           </div>
-        </div>
+        </figure>
       </div>
     </section>
+    </div>
+    <aside class="dock" id="lead-dock" aria-label="Enquiry">
+      ${formMarkup({
+        id: "form-dock",
+        enquiry: "project_details",
+        section: "dock",
+        title: "Get the latest details",
+        button: "Get Project Details",
+        direct: false,
+        intro: "Share your details and our team will call you with the price list, floor plans and payment options for Hero Homes Sector MU."
+      })}
+    </aside>
+    </div>
   </main>
-  <aside class="dock" id="lead-dock" aria-label="Enquiry">
-    ${formMarkup({
-      id: "form-dock",
-      enquiry: "project_details",
-      section: "dock",
-      title: "Request a call",
-      intro: "Name and mobile number. We will call you about Leafsong Retreat."
-    })}
-  </aside>
-  </div>
+  ${enquireDialog()}
   ${footer()}
   ${contactRail()}
   <script type="application/ld+json">${structuredData()}</script>

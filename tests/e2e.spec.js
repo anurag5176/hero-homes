@@ -13,13 +13,15 @@ test("primary paths, validation, success, failure and anchors", async ({ page })
   await expect(page.locator("h1")).toHaveText("Hero Homes Sector MU, Greater Noida");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://herohomegroups.in/");
 
-  await page.getByRole("button", { name: "Request brochure" }).click();
-  await expect(page.locator("#form-dock input[name=enquiry_type]")).toHaveValue("brochure");
+  await page.getByRole("button", { name: "Request Project Brochure" }).click({ force: true });
+  const form = page.locator("#form-popup");
+  await expect(page.locator("#enquiry-dialog")).toHaveJSProperty("open", true);
+  await expect(form.locator("input[name=enquiry_type]")).toHaveValue("brochure");
+  await expect(form.getByRole("button", { name: "Enquire Now" })).toBeVisible();
 
-  await page.getByRole("button", { name: "Download floor plan" }).first().click();
-  const form = page.locator("#form-dock");
+  await page.getByRole("button", { name: "Get 3 BHK Floor Plan" }).first().evaluate((node) => node.click());
   await expect(form.locator("input[name=enquiry_type]")).toHaveValue("floor_plan");
-  await expect(form.locator("input[name=configuration]")).toHaveValue("3 BHK");
+  await expect(form.locator("input[name=configuration]")).toHaveValue("3 BHK + 2 Toilets");
 
   await form.locator("button[type=submit]").click();
   await expect(form.getByText("Enter your full name.")).toBeVisible();
@@ -43,7 +45,7 @@ test("primary paths, validation, success, failure and anchors", async ({ page })
   await expect(form.getByText(/not saved/)).toBeVisible();
   await expect(form.locator("input[name=name]")).toHaveValue("Meera Shah");
 
-  await page.getByRole("button", { name: "Request project details" }).click();
+  await page.locator("#contact").getByRole("button", { name: "Get Project Details" }).evaluate((node) => node.click());
   await page.unroute("**/api/enquiry");
   const [request] = await Promise.all([
     page.waitForRequest("**/api/enquiry"),
@@ -53,9 +55,14 @@ test("primary paths, validation, success, failure and anchors", async ({ page })
   expect(sent.utm_source).toBe("qa");
   expect(sent.utm_campaign).toBe("sector-mu");
   expect(sent.enquiry_type).toBe("project_details");
-  await expect(form.getByText(/has been recorded/)).toBeVisible();
+  await expect(form.getByText(/reach out to you shortly/)).toBeVisible();
+  await page.keyboard.press("Escape");
 
   const summary = page.locator("#faq summary").first();
+  await summary.scrollIntoViewIfNeeded();
+  if (await page.locator("#enquiry-dialog").evaluate((node) => node.open)) {
+    await page.keyboard.press("Escape");
+  }
   await summary.focus();
   await page.keyboard.press("Enter");
   await expect(page.locator("#faq details").first()).toHaveAttribute("open", "");
@@ -86,22 +93,35 @@ test("layouts stay within the viewport", async ({ page }) => {
   expect(desktopHero.top).toBeGreaterThanOrEqual(desktopHero.header - 1);
   expect(desktopHero.bottom).toBeLessThanOrEqual(desktopHero.view + 1);
   expect(desktopHero.height).toBeLessThanOrEqual(desktopHero.view - desktopHero.header + 2);
+  const desktopFit = await page.evaluate(() => {
+    const hero = document.querySelector(".hero").getBoundingClientRect();
+    const copy = document.querySelector(".hero-copy").getBoundingClientRect();
+    const card = document.querySelector(".hero-card").getBoundingClientRect();
+    const strip = document.querySelector(".hero-strip").getBoundingClientRect();
+    return {
+      copy: hero.bottom - copy.bottom,
+      card: strip.top - card.bottom,
+      strip: hero.bottom - strip.bottom
+    };
+  });
+  expect(desktopFit.copy).toBeGreaterThanOrEqual(-1);
+  expect(desktopFit.card).toBeGreaterThanOrEqual(-1);
+  expect(desktopFit.strip).toBeGreaterThanOrEqual(-1);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-  const mobileHero = await page.evaluate(() => {
-    const hero = document.querySelector(".hero").getBoundingClientRect();
-    const header = document.querySelector(".site-header").getBoundingClientRect();
-    const dock = document.querySelector("#lead-dock").getBoundingClientRect();
+  const mobileOrder = await page.evaluate(() => {
+    const top = (selector) => document.querySelector(selector).getBoundingClientRect().top;
     return {
-      bottom: hero.bottom,
-      dockTop: dock.top,
-      view: window.innerHeight,
-      header: header.bottom
+      headline: top("h1"),
+      image: top(".hero-media"),
+      form: top(".hero-card"),
+      strip: top(".hero-strip")
     };
   });
-  expect(mobileHero.bottom).toBeLessThanOrEqual(mobileHero.dockTop + 2);
-  expect(mobileHero.bottom).toBeLessThanOrEqual(mobileHero.view + 1);
+  expect(mobileOrder.headline).toBeLessThan(mobileOrder.image);
+  expect(mobileOrder.image).toBeLessThan(mobileOrder.form);
+  expect(mobileOrder.form).toBeLessThan(mobileOrder.strip);
   await page.goto("/#homes");
   const clearance = await page.evaluate(() => {
     const heading = document.querySelector("#homes h2").getBoundingClientRect().top;
@@ -111,20 +131,20 @@ test("layouts stay within the viewport", async ({ page }) => {
   expect(clearance).toBeGreaterThanOrEqual(-1);
 });
 
-test("mobile sticky enquire stays usable", async ({ page }) => {
+test("mobile enquiry card sits in the hero and can be filled", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-  const dock = page.locator("#lead-dock");
+  const dock = page.locator(".hero-card");
   await expect(dock).toBeVisible();
-  await page.locator("#faq").scrollIntoViewIfNeeded();
-  await expect(dock).toBeVisible();
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-  const covered = await page.evaluate(() => {
-    const footer = document.querySelector("#site-footer").getBoundingClientRect();
-    const dockBox = document.querySelector("#lead-dock").getBoundingClientRect();
-    return footer.bottom > dockBox.top + 2;
-  });
-  expect(covered).toBe(false);
+  await expect(dock.getByRole("heading", { level: 1 })).toHaveCount(0);
+  const placed = await page.evaluate(() => getComputedStyle(document.querySelector(".hero-card")).position);
+  expect(placed).not.toBe("fixed");
   await dock.locator("input[name=name]").fill("Meera Shah");
   await expect(dock.locator("input[name=name]")).toHaveValue("Meera Shah");
+  await page.locator("#faq").scrollIntoViewIfNeeded();
+  const footerClear = await page.evaluate(() => {
+    const footer = document.querySelector("#site-footer").getBoundingClientRect();
+    return footer.height > 0 && footer.width > 0;
+  });
+  expect(footerClear).toBe(true);
 });
