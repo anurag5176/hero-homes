@@ -797,6 +797,48 @@ export function renderRobots() {
   return `User-agent: *\nAllow: /\n\nSitemap: ${site.domain}/sitemap.xml\n`;
 }
 
+export function renderLlms() {
+  const homes = site.homes
+    .map(([name, size, , price]) => `${name}, ${size}, ${price}`)
+    .join("; ");
+  return `# Hero Homes Greater Noida
+
+> Authorised channel-partner page for Leafsong Retreat by Hero Homes at Plot GH-02, Sector MU, Greater Noida. This is not the developer's website.
+
+The page lists 3 BHK floor plans, the advertised starting price, amenities and location, and collects an enquiry with a name, an Indian mobile number and consent. Prices, payment terms and availability follow official project documents.
+
+## Pages
+
+- [Project page](${site.domain}/): Floor plans, price, amenities, location and the enquiry form
+- [Privacy policy](${site.domain}/privacy): What the enquiry form collects and how it is handled
+- [Terms](${site.domain}/terms): Terms for using this channel-partner page
+
+## Project
+
+- Marketed name: ${p.marketedName}
+- Developer: ${p.developer}
+- Address: ${p.address}
+- Homes: ${homes}
+- Introductory basic sale price: ${p.bsp} until ${p.bspUntil}
+- Land: ${p.land}
+- Clubhouse: ${p.clubhouse}
+- RERA registration: ${p.rera}
+- Possession: ${p.possession}
+- Official project page: ${p.officialUrl}
+- UP RERA: ${p.reraPortal}
+
+## Contact
+
+- Phone and WhatsApp: +91 98187 35258
+- Enquiry form: ${site.domain}/#enquire
+- Closing the enquiry popup does not submit the form
+
+## Optional
+
+- [Sitemap](${site.domain}/sitemap.xml)
+`;
+}
+
 export function renderSitemap() {
   const urls = ["/", "/privacy", "/terms"];
   const body = urls

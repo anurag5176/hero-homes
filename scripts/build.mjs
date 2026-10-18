@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { renderHome, renderPrivacy, renderTerms, renderNotFound, renderRobots, renderSitemap } from "./render.mjs";
+import { renderHome, renderPrivacy, renderTerms, renderNotFound, renderRobots, renderLlms, renderSitemap } from "./render.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
@@ -17,6 +17,7 @@ write(path.join(dist, "privacy", "index.html"), renderPrivacy());
 write(path.join(dist, "terms", "index.html"), renderTerms());
 write(path.join(dist, "404.html"), renderNotFound());
 write(path.join(dist, "robots.txt"), renderRobots());
+write(path.join(dist, "llms.txt"), renderLlms());
 write(path.join(dist, "sitemap.xml"), renderSitemap());
 
 const assetDir = path.join(dist, "assets");

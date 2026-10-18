@@ -53,10 +53,16 @@ test("public copy leaves out unverified commercial claims", () => {
 });
 
 test("robots and sitemap expose the intended URLs only", () => {
+  assert.doesNotMatch(home, /google-site-verification/);
   const robots = fs.readFileSync(path.join(dist, "robots.txt"), "utf8");
+  const llms = fs.readFileSync(path.join(dist, "llms.txt"), "utf8");
   const sitemap = fs.readFileSync(path.join(dist, "sitemap.xml"), "utf8");
   assert.match(robots, /Allow: \//);
   assert.doesNotMatch(robots, /Disallow: \//);
+  assert.match(robots, /Sitemap: https:\/\/herohomegroups\.in\/sitemap\.xml/);
+  assert.match(llms, /Leafsong Retreat/);
+  assert.match(llms, /UPRERAPRJ414014\/10\/2026/);
+  assert.doesNotMatch(llms, /HDFC|153\.84/);
   assert.match(sitemap, /https:\/\/herohomegroups\.in\/</);
   assert.match(sitemap, /https:\/\/herohomegroups\.in\/privacy</);
   assert.match(sitemap, /https:\/\/herohomegroups\.in\/terms</);

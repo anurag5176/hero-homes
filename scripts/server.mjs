@@ -143,6 +143,7 @@ export function createApp(options = {}) {
       "/privacy": path.join(dist, "privacy", "index.html"),
       "/terms": path.join(dist, "terms", "index.html"),
       "/robots.txt": path.join(dist, "robots.txt"),
+      "/llms.txt": path.join(dist, "llms.txt"),
       "/sitemap.xml": path.join(dist, "sitemap.xml")
     };
 

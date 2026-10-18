@@ -71,6 +71,8 @@ test("primary paths, validation, success, failure and anchors", async ({ page })
   expect(response.status()).toBe(200);
   const robots = await page.goto("/robots.txt");
   expect(robots.status()).toBe(200);
+  const llms = await page.goto("/llms.txt");
+  expect(llms.status()).toBe(200);
   const missing = await page.goto("/missing-page");
   expect(missing.status()).toBe(404);
 
