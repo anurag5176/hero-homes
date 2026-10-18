@@ -2656,12 +2656,16 @@ body.has-dock {
 }
 
 .hero-points .icon-plate {
+  display: grid;
+  place-items: center;
   width: 2.35rem;
   height: 2.35rem;
   border-radius: 999px;
 }
 
 .hero-strip .icon-plate {
+  display: grid;
+  place-items: center;
   width: 2.85rem;
   height: 2.85rem;
   border-radius: 999px;
