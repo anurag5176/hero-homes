@@ -58,32 +58,32 @@ export const site = {
     [
       "Education",
       [
-        ["Scholars Home International School", "4.0 km"],
-        ["Jaypee Public School", "4.6 km"],
-        ["Bennett University", "5.9 km"]
+        ["Scholars Home International School", "~4.0 km"],
+        ["Jaypee Public School", "~4.6 km"],
+        ["Bennett University", "~5.9 km"]
       ]
     ],
     [
       "Healthcare",
       [
-        ["Fortis Hospital", "5.1 km"],
-        ["Yatharth Super Speciality Hospital", "7.0 km"]
+        ["Fortis Hospital", "~5.1 km"],
+        ["Yatharth Super Speciality Hospital", "~7.0 km"]
       ]
     ],
     [
       "Shopping and Leisure",
       [
-        ["MSX Mall", "4.4 km"],
-        ["The Grand Venice Mall", "6.1 km"],
-        ["Jaypee Greens Golf & Spa", "6.0 km"]
+        ["MSX Mall", "~4.4 km"],
+        ["The Grand Venice Mall", "~6.1 km"],
+        ["Jaypee Greens Golf & Spa", "~6.0 km"]
       ]
     ],
     [
       "Key Destinations",
       [
-        ["Pari Chowk", ""],
-        ["Knowledge Park", ""],
-        ["Noida–Greater Noida Expressway corridor", ""]
+        ["Pari Chowk", "~7 km"],
+        ["Knowledge Park", "~9 km"],
+        ["Noida–Greater Noida Expressway corridor", "~6 km"]
       ]
     ]
   ],

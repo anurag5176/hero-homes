@@ -8,7 +8,7 @@ const home = fs.readFileSync(path.join(dist, "index.html"), "utf8");
 
 test("home page has one h1, canonical metadata and crawlable FAQs", () => {
   assert.equal((home.match(/<h1[\s>]/g) || []).length, 1);
-  assert.match(home, /<h1 class="reveal">Hero Homes<br> Sector MU,<br> Greater Noida<\/h1>/);
+  assert.match(home, /<h1 class="reveal"><span class="hero-mark">Hero<\/span> Homes<br> Sector MU,<br> Greater Noida<\/h1>/);
   assert.match(home, /<link rel="canonical" href="https:\/\/herohomegroups\.in\/">/);
   assert.match(home, /<title>Hero Homes Greater Noida \| Price, Floor Plans &amp; Payment Plans<\/title>/);
   assert.match(home, /og:title" content="Hero Homes Greater Noida \| 3 BHK Homes in Sector MU"/);

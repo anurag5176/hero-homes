@@ -234,7 +234,7 @@ function watchScroll(dialog) {
         return;
       }
       if (y < mark) mark = y;
-      if (y - mark >= max * 0.3) {
+      if (y - mark >= max * 0.4) {
         mark = y;
         openEnquire({ type: "project_details", section: "scroll" });
       }

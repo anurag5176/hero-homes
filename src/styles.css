@@ -1103,10 +1103,6 @@ dialog::backdrop {
     justify-self: center;
   }
 
-  .place-groups {
-    grid-template-columns: 1fr 1fr;
-  }
-
   .plan {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     align-items: stretch;
@@ -2122,39 +2118,81 @@ body.has-dock {
   border-right: 0;
 }
 
-.place-groups {
-  display: grid;
-  gap: 1rem 1.25rem;
-  margin-top: 0.9rem;
+.place-card {
+  padding: 0;
+  overflow: hidden;
 }
 
-.place-label {
-  margin: 0 0 0.3rem;
+.place-card h3 {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid #e3dbd1;
+}
+
+.place-card .spec-table {
+  margin: 0;
+}
+
+.place-card .spec-table th,
+.place-card .spec-table td {
+  padding: 0.72rem 0.95rem;
+  border: 1px solid #e3dbd1;
+  text-align: left;
+  vertical-align: middle;
+  white-space: normal;
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.place-card .spec-table thead th {
+  background: #f7f4ef;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8a8176;
+}
+
+.place-card .spec-table thead th:last-child,
+.place-card .spec-table td {
+  width: 7rem;
+  text-align: right;
+  white-space: nowrap;
   font-weight: 600;
 }
 
-.place-group ul {
+.place-card .spec-table tbody th {
+  background: #fff;
+  font-weight: 500;
+}
+
+.place-card .spec-table .place-band th {
+  background: #f3efe9;
+  font-weight: 700;
+  text-align: left;
+}
+
+.place-card .spec-table tr:first-child th {
+  border-top: 0;
+}
+
+.place-card .spec-table th:first-child,
+.place-card .spec-table .place-band th {
+  border-left: 0;
+}
+
+.place-card .spec-table th:last-child,
+.place-card .spec-table td:last-child {
+  border-right: 0;
+}
+
+.place-card .address-line {
   margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.place-group li {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.4rem 0;
-  border-top: 1px solid var(--line);
-  font-size: 0.95rem;
-}
-
-.place-group li span:last-child:not(:first-child) {
-  color: var(--muted);
-  white-space: nowrap;
-}
-
-.address-line {
-  margin-top: 1rem;
+  padding: 0.9rem 1.1rem 1.05rem;
+  border-top: 1px solid #e3dbd1;
 }
 
 .pay-points {
@@ -2795,6 +2833,16 @@ body.has-dock {
   color: var(--muted);
 }
 
+.hero-strip > div:nth-child(2) {
+  border-left: 1px solid #e4ddd4;
+  padding-left: 0.7rem;
+}
+
+.hero-strip > div:nth-child(n + 3) {
+  border-top: 1px solid #e4ddd4;
+  padding-top: 0.7rem;
+}
+
 .hero-strip .strip-price,
 .hero-strip .strip-rera {
   grid-column: 1 / -1;
@@ -2821,6 +2869,8 @@ body.has-dock {
   }
 
   .hero-layout {
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 1.5rem 2rem;
@@ -2858,9 +2908,21 @@ body.has-dock {
     right: 1.35rem;
     bottom: 0.85rem;
     grid-template-columns: 1.15fr 1.25fr 1.25fr 1.7fr 0.95fr;
-    align-items: center;
+    align-items: stretch;
+    gap: 0;
     margin: 0;
-    padding: 1rem 1.15rem;
+    padding: 0.85rem 0.35rem;
+  }
+
+  .hero-strip > div,
+  .hero-strip > div:nth-child(2),
+  .hero-strip > div:nth-child(n + 3) {
+    border-top: 0;
+    padding: 0.15rem 0.95rem;
+  }
+
+  .hero-strip > div + div {
+    border-left: 1px solid #e4ddd4;
   }
 
   .hero-strip .strip-price,
@@ -3000,8 +3062,7 @@ body.has-dock {
 .visit-overlay a {
   color: #fff;
   font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 0.16rem;
+  text-decoration: none;
 }
 
 .visit-overlay .btn {

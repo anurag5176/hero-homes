@@ -405,13 +405,10 @@ export function renderHome() {
     .join("");
   const placeGroups = site.places
     .map(([group, items]) => {
-      const list = items
-        .map(([place, distance]) => {
-          const note = distance ? `<span>${escapeHtml(distance)}</span>` : "";
-          return `<li><span>${escapeHtml(place)}</span>${note}</li>`;
-        })
+      const rows = items
+        .map(([place, distance]) => `<tr><th scope="row">${escapeHtml(place)}</th><td>${distance ? escapeHtml(distance) : ""}</td></tr>`)
         .join("");
-      return `<div class="place-group"><p class="place-label">${escapeHtml(group)}</p><ul>${list}</ul></div>`;
+      return `<tr class="place-band"><th colspan="2" scope="colgroup">${escapeHtml(group)}</th></tr>${rows}`;
     })
     .join("");
   const homeCards = site.homes
@@ -549,9 +546,14 @@ export function renderHome() {
         </div>
         <div class="split">
           <iframe class="map-embed" title="Hero Homes, Sector MU, Greater Noida" src="${p.mapEmbed}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
-          <div class="card reveal">
+          <div class="card place-card reveal">
             <h3>Connectivity and Nearby Destinations</h3>
-            <div class="place-groups">${placeGroups}</div>
+            <table class="spec-table">
+              <thead>
+                <tr><th scope="col">Destination</th><th scope="col">Distance</th></tr>
+              </thead>
+              <tbody>${placeGroups}</tbody>
+            </table>
             <p class="address-line"><strong>Project Address:</strong> ${escapeHtml(p.address)}.</p>
           </div>
         </div>
@@ -722,17 +724,20 @@ export function renderPrivacy() {
     description: "How this Hero Homes Sector MU project page handles enquiry details.",
     path: "/privacy",
     body: `<p>This page explains what happens to the name and mobile number you submit on ${escapeHtml(site.domain.replace("https://", ""))}.</p>
-    <h2>Who operates the site</h2>
-    <p>${site.operator.legalName ? escapeHtml(site.operator.legalName) + " operates this website." : "The legal name of the website operator has not been published yet. Until it is, the enquiry form is not a production lead channel."}</p>
+    <h2>Who publishes this page</h2>
+    <p>This website is published by an authorised channel partner for enquiries about ${escapeHtml(p.marketedName)} by Hero Homes at ${escapeHtml(p.location)}. It is not the website of ${escapeHtml(p.developer)}.</p>
     <h2>What is collected</h2>
-    <p>If you submit the form, the site receives your name, Indian mobile number, consent, optional configuration and contact preference, the enquiry type, the section you used, and campaign parameters already present in the page address (UTM fields, landing path and referrer).</p>
-    <p>The form does not ask for PAN, Aadhaar, income or payment details.</p>
+    <p>If you submit an enquiry, the site receives your name, Indian mobile number and consent. It also receives the kind of enquiry you opened, the part of the page you used, a configuration when you request a specific floor plan, and any campaign details already present in the page address, such as UTM fields, the landing path and the referrer.</p>
+    <p>The form does not ask for PAN, Aadhaar, income or payment details. Closing the enquiry window does not send anything.</p>
     <h2>Why it is collected</h2>
-    <p>The details are used to respond to your enquiry about ${escapeHtml(p.marketedName)} in ${escapeHtml(p.location)}. Consent is required and is not pre-selected. You can read the project information on this page without submitting the form.</p>
+    <p>The details are used so the project desk can contact you about ${escapeHtml(p.marketedName)} in ${escapeHtml(p.location)} with the information you asked for. Consent is required and is not pre-selected. You can read the project information without submitting the form.</p>
     <h2>Where it goes</h2>
-    <p>Enquiries are emailed through the mail account configured on the server. If mail is not configured, the form states that the enquiry was not saved. The app password stays on the server. Details are not placed in public pages or in frontend code.</p>
+    <p>A submitted enquiry is emailed to the project desk. The mail password stays on the server and is not shown on the page. If mail is not connected, the form says the enquiry was not saved and that nobody was notified.</p>
+    <p>Call and WhatsApp buttons open your phone or WhatsApp to +91 98187 35258. Those conversations are not stored by this website.</p>
     <h2>How long it is kept</h2>
-    <p>The operator should keep enquiry records only as long as needed to respond and to meet a legal duty, then delete them. A retention period will be published when the operating business is named.</p>
+    <p>Enquiry records are kept only as long as needed to respond to you and to meet a legal duty, and are then deleted.</p>
+    <h2>If you want to stop contact</h2>
+    <p>Call +91 98187 35258 and ask not to be contacted about this enquiry.</p>
     <p>Reviewed ${escapeHtml(site.reviewed)}.</p>`
   });
 }
