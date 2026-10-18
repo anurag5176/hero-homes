@@ -1,0 +1,17 @@
+{
+  "name": "hero-homes-sector-mu",
+  "private": true,
+  "type": "module",
+  "description": "Independent project information site for Hero Homes, Leafsong Retreat, Sector MU, Greater Noida.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "node scripts/server.mjs",
+    "dev": "node scripts/build.mjs && node scripts/server.mjs",
+    "test": "npm run build && node --test tests/lead.test.mjs tests/content.test.mjs",
+    "test:e2e": "playwright test",
+    "capture": "node scripts/capture.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1"
+  }
+}

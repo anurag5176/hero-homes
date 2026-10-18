@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+data/leads/
+qa/screenshots/
+playwright-report/
+test-results/
+blob-report/
+.DS_Store
