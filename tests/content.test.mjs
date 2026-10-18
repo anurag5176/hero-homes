@@ -13,6 +13,13 @@ test("home page has one h1, canonical metadata and crawlable FAQs", () => {
   assert.match(home, /<title>Hero Homes Greater Noida \| Price, Floor Plans &amp; Payment Plans<\/title>/);
   assert.match(home, /og:title" content="Hero Homes Greater Noida \| 3 BHK Homes in Sector MU"/);
   assert.match(home, /name="robots" content="index, follow"/);
+  assert.match(home, /rel="icon" href="\/favicon\.ico"/);
+  assert.match(home, /rel="icon" href="\/favicon\.png" type="image\/png" sizes="240x240"/);
+  assert.match(home, /rel="apple-touch-icon" href="\/favicon\.png"/);
+  assert.match(home, /property="og:image" content="https:\/\/www\.herohomesgroups\.in\/favicon\.png"/);
+  assert.equal(fs.existsSync(path.join(dist, "favicon.ico")), true);
+  assert.equal(fs.existsSync(path.join(dist, "favicon.png")), true);
+  assert.doesNotMatch(home, /favicon\.(?:ico|png)\?/);
   assert.match(home, /UPRERAPRJ414014\/10\/2026/);
   assert.match(home, /Where is Hero Homes located in Greater Noida/);
   assert.match(home, /<summary>/);

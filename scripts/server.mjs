@@ -144,7 +144,9 @@ export function createApp(options = {}) {
       "/terms": path.join(dist, "terms", "index.html"),
       "/robots.txt": path.join(dist, "robots.txt"),
       "/llms.txt": path.join(dist, "llms.txt"),
-      "/sitemap.xml": path.join(dist, "sitemap.xml")
+      "/sitemap.xml": path.join(dist, "sitemap.xml"),
+      "/favicon.ico": path.join(dist, "favicon.ico"),
+      "/favicon.png": path.join(dist, "favicon.png")
     };
 
     let file = routes[pathname] || null;

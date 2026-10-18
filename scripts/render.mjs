@@ -56,7 +56,7 @@ function iconPlate(name) {
 }
 
 function logo(className = "logo") {
-  return `<img class="${className}" src="/assets/herologo.webp" width="240" height="240" alt="Hero Homes">`;
+  return `<img class="${className}" src="/assets/herologo.webp" width="64" height="64" alt="Hero Homes">`;
 }
 
 function formDirect() {
@@ -340,6 +340,8 @@ function structuredData() {
           addressCountry: "IN"
         },
         brand: { "@type": "Brand", name: p.brand },
+        image: `${site.domain}/favicon.png`,
+        logo: `${site.domain}/favicon.png`,
         identifier: {
           "@type": "PropertyValue",
           name: "UP RERA registration number printed by Hero Homes",
@@ -369,6 +371,17 @@ function head({ title, description, path, robots = "index, follow", ogTitle, ogD
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    @media (max-width: 1023px) {
+      .site-header .logo { width: 4rem; height: 4rem; max-width: 4rem; object-fit: contain; }
+      .site-header .header-inner { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; min-height: 4.55rem; }
+      .site-header .nav, .header-actions, .site-header .brand-place { display: none; }
+      .header-phone-mobile, .header-enquire { display: inline-flex; align-items: center; justify-content: center; max-width: 10.5rem; min-height: 2.5rem; box-sizing: border-box; }
+      .header-phone-mobile { grid-column: 1; justify-self: end; }
+      .site-header .brand { grid-column: 2; justify-self: center; }
+      .header-enquire { grid-column: 3; justify-self: start; }
+    }
+  </style>
   <title>${escapeHtml(title)}</title>
   <meta name="description" content="${escapeHtml(description)}">
   <meta name="robots" content="${robots}">
@@ -383,8 +396,14 @@ function head({ title, description, path, robots = "index, follow", ogTitle, ogD
   <meta name="twitter:title" content="${escapeHtml(socialTitle)}">
   <meta name="twitter:description" content="${escapeHtml(socialDescription)}">
   <meta name="theme-color" content="#ffffff">
-  <link rel="icon" href="/assets/herologo.png" type="image/png" sizes="240x240">
-  <link rel="apple-touch-icon" href="/assets/herologo.png">
+  <link rel="icon" href="/favicon.ico" sizes="240x240">
+  <link rel="icon" href="/favicon.png" type="image/png" sizes="240x240">
+  <link rel="apple-touch-icon" href="/favicon.png">
+  <meta property="og:image" content="${site.domain}/favicon.png">
+  <meta property="og:image:width" content="240">
+  <meta property="og:image:height" content="240">
+  <meta property="og:image:alt" content="Hero Homes">
+  <meta name="twitter:image" content="${site.domain}/favicon.png">
   <link rel="preload" href="/assets/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/poppins-600.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/poppins-700.woff2" as="font" type="font/woff2" crossorigin>

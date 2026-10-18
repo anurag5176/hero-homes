@@ -26,6 +26,8 @@ fs.copyFileSync(path.join(root, "src", "styles.css"), path.join(assetDir, "style
 fs.copyFileSync(path.join(root, "src", "site.js"), path.join(assetDir, "site.js"));
 fs.copyFileSync(path.join(root, "src", "assets", "herologo.webp"), path.join(assetDir, "herologo.webp"));
 fs.copyFileSync(path.join(root, "src", "assets", "herologo.png"), path.join(assetDir, "herologo.png"));
+fs.copyFileSync(path.join(root, "src", "assets", "herologo.png"), path.join(dist, "favicon.png"));
+fs.writeFileSync(path.join(dist, "favicon.ico"), pngToIco(fs.readFileSync(path.join(root, "src", "assets", "herologo.png"))));
 fs.copyFileSync(path.join(root, "src", "assets", "hero.jpg"), path.join(assetDir, "hero.jpg"));
 for (const weight of [400, 500, 600, 700]) {
   const name = `poppins-${weight}.woff2`;
@@ -33,6 +35,20 @@ for (const weight of [400, 500, 600, 700]) {
 }
 
 const version = Date.now().toString(36);
+function pngToIco(png) {
+  const header = Buffer.alloc(6);
+  header.writeUInt16LE(1, 2);
+  header.writeUInt16LE(1, 4);
+  const entry = Buffer.alloc(16);
+  entry.writeUInt8(240, 0);
+  entry.writeUInt8(240, 1);
+  entry.writeUInt16LE(1, 4);
+  entry.writeUInt16LE(32, 6);
+  entry.writeUInt32LE(png.length, 8);
+  entry.writeUInt32LE(22, 12);
+  return Buffer.concat([header, entry, png]);
+}
+
 function stamp(file) {
   const html = fs.readFileSync(file, "utf8").replaceAll("/assets/", `/assets/`).replace(
     /(\/assets\/[^"'?]+\.(?:css|js|svg|png|jpg|woff2|webp))/g,
