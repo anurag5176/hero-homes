@@ -11,7 +11,7 @@ test("primary paths, validation, success, failure and anchors", async ({ page })
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/?utm_source=qa&utm_medium=test&utm_campaign=sector-mu");
   await expect(page.locator("h1")).toHaveText("Hero Homes Sector MU, Greater Noida");
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://herohomegroups.in/");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://herohomesgroups.in/");
 
   await page.getByRole("button", { name: "Request Project Brochure" }).click({ force: true });
   const form = page.locator("#form-popup");

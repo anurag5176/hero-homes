@@ -7,13 +7,5 @@
     "api/enquiry.js": {
       "maxDuration": 30
     }
-  },
-  "redirects": [
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.herohomegroups.in" }],
-      "destination": "https://herohomegroups.in/:path*",
-      "permanent": true
-    }
-  ]
+  }
 }

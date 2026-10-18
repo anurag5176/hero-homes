@@ -9,7 +9,7 @@ const home = fs.readFileSync(path.join(dist, "index.html"), "utf8");
 test("home page has one h1, canonical metadata and crawlable FAQs", () => {
   assert.equal((home.match(/<h1[\s>]/g) || []).length, 1);
   assert.match(home, /<h1 class="reveal"><span class="hero-mark">Hero<\/span> Homes<br> Sector MU,<br> Greater Noida<\/h1>/);
-  assert.match(home, /<link rel="canonical" href="https:\/\/herohomegroups\.in\/">/);
+  assert.match(home, /<link rel="canonical" href="https:\/\/herohomesgroups\.in\/">/);
   assert.match(home, /<title>Hero Homes Greater Noida \| Price, Floor Plans &amp; Payment Plans<\/title>/);
   assert.match(home, /og:title" content="Hero Homes Greater Noida \| 3 BHK Homes in Sector MU"/);
   assert.match(home, /name="robots" content="index, follow"/);
@@ -59,13 +59,13 @@ test("robots and sitemap expose the intended URLs only", () => {
   const sitemap = fs.readFileSync(path.join(dist, "sitemap.xml"), "utf8");
   assert.match(robots, /Allow: \//);
   assert.doesNotMatch(robots, /Disallow: \//);
-  assert.match(robots, /Sitemap: https:\/\/herohomegroups\.in\/sitemap\.xml/);
+  assert.match(robots, /Sitemap: https:\/\/herohomesgroups\.in\/sitemap\.xml/);
   assert.match(llms, /Leafsong Retreat/);
   assert.match(llms, /UPRERAPRJ414014\/10\/2026/);
   assert.doesNotMatch(llms, /HDFC|153\.84/);
-  assert.match(sitemap, /https:\/\/herohomegroups\.in\/</);
-  assert.match(sitemap, /https:\/\/herohomegroups\.in\/privacy</);
-  assert.match(sitemap, /https:\/\/herohomegroups\.in\/terms</);
+  assert.match(sitemap, /https:\/\/herohomesgroups\.in\/</);
+  assert.match(sitemap, /https:\/\/herohomesgroups\.in\/privacy</);
+  assert.match(sitemap, /https:\/\/herohomesgroups\.in\/terms</);
   assert.doesNotMatch(sitemap, /404/);
 });
 

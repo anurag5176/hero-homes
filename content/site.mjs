@@ -4,7 +4,7 @@
  * Leave a string empty when the value is not confirmed. Do not invent one.
  */
 export const site = {
-  domain: "https://herohomegroups.in",
+  domain: "https://herohomesgroups.in",
   locale: "en-IN",
   reviewed: "18 October 2026",
   title: "Hero Homes Greater Noida | Price, Floor Plans & Payment Plans",
