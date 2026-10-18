@@ -111,17 +111,20 @@ test("layouts stay within the viewport", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   const mobileOrder = await page.evaluate(() => {
-    const top = (selector) => document.querySelector(selector).getBoundingClientRect().top;
+    const box = (selector) => document.querySelector(selector).getBoundingClientRect();
+    const image = box(".hero-media");
     return {
-      headline: top("h1"),
-      image: top(".hero-media"),
-      form: top(".hero-card"),
-      strip: top(".hero-strip")
+      headline: box("h1").top,
+      image: image.top,
+      imageBottom: image.bottom,
+      strip: box(".hero-strip").top,
+      formHidden: getComputedStyle(document.querySelector(".hero-card")).display === "none"
     };
   });
-  expect(mobileOrder.headline).toBeLessThan(mobileOrder.image);
-  expect(mobileOrder.image).toBeLessThan(mobileOrder.form);
-  expect(mobileOrder.form).toBeLessThan(mobileOrder.strip);
+  expect(mobileOrder.formHidden).toBe(true);
+  expect(mobileOrder.headline).toBeGreaterThanOrEqual(mobileOrder.image - 1);
+  expect(mobileOrder.headline).toBeLessThan(mobileOrder.imageBottom);
+  expect(mobileOrder.strip).toBeGreaterThanOrEqual(mobileOrder.imageBottom - 2);
   await page.goto("/#homes");
   const clearance = await page.evaluate(() => {
     const heading = document.querySelector("#homes h2").getBoundingClientRect().top;
@@ -134,11 +137,9 @@ test("layouts stay within the viewport", async ({ page }) => {
 test("mobile enquiry card sits in the hero and can be filled", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-  const dock = page.locator(".hero-card");
+  await expect(page.locator(".hero-card")).toBeHidden();
+  const dock = page.locator("#form-dock");
   await expect(dock).toBeVisible();
-  await expect(dock.getByRole("heading", { level: 1 })).toHaveCount(0);
-  const placed = await page.evaluate(() => getComputedStyle(document.querySelector(".hero-card")).position);
-  expect(placed).not.toBe("fixed");
   await dock.locator("input[name=name]").fill("Meera Shah");
   await expect(dock.locator("input[name=name]")).toHaveValue("Meera Shah");
   await page.locator("#faq").scrollIntoViewIfNeeded();

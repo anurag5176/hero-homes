@@ -204,9 +204,17 @@ function contactRail() {
 }
 
 function header(active) {
+  const mobilePhone = site.operator.phone
+    ? `<a class="call-capsule header-phone-mobile" href="tel:${escapeHtml(phoneTel(site.operator.phone))}">${escapeHtml(phoneLabel(site.operator.phone))}</a>`
+    : "";
+  const mobileEnquire =
+    active === "home"
+      ? `<button class="btn header-cta header-enquire" type="button" data-enquiry="project_details" data-section="header">Enquire Now</button>`
+      : `<a class="btn header-cta header-enquire" href="/#enquire">Enquire Now</a>`;
   return `<a class="skip" href="#content">Skip to content</a>
   <header class="site-header">
     <div class="wrap header-inner">
+      ${mobilePhone}
       <a class="brand" href="/">
         ${logo()}
         <span class="brand-place">Greater Noida</span>
@@ -227,6 +235,7 @@ function header(active) {
             : `<a class="btn header-cta" href="/#enquire">Download Brochure</a>`
         }
       </div>
+      ${mobileEnquire}
     </div>
   </header>`;
 }
